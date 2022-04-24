@@ -57,6 +57,8 @@ fi
 
 printf "Installing ntapfuse binary to system...\n"
 sudo make install > /dev/null
+printf "Modifying ntapfuse permissions...\n"
+sudo chmod u+s /usr/local/bin/ntapfuse
 
 # create the testing directories
 printf "Creating the mount and base directories...\n"

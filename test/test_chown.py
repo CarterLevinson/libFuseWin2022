@@ -43,7 +43,11 @@ def test_chown():
         subprocess.run(['echo', "test text"], stdout=tf)
 
     usage1 = check_quota_usage(uid1)
+    if usage1 is None:
+        usage1 = 0
     usage2 = check_quota_usage(uid2)
+    if usage2 is None:
+        usage2 = 0
 
     filePath = os.path.join(mountPath + "/testFile.txt")
     folderPath = os.path.join(mountPath + "/testFolder")
@@ -61,7 +65,11 @@ def test_chown():
     usage2 += (fileSize + folderSize)
 
     usageRes1 = check_quota_usage(uid1)
+    if usageRes1 is None:
+        usageRes1 = 0
     usageRes2 = check_quota_usage(uid2)
+    if usageRes2 is None:
+        usageRes2 = 0
 
     end_test()
     assert usage1 == usageRes1 and usage2 == usageRes2

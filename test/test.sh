@@ -3,6 +3,27 @@
 # code by @author Carter S. Levinson <carter.levinson@pitt.edu>
 
 #TODO: use getopt to allow for parsing of cli options for the script
+# Call getopt to parse the options
+# default=True
+# while getopts ":q:v:s" o; do 
+#   case "${o}" in 
+#     q) 
+#       queit=True
+#       default=False
+#       ;;
+#     v)
+#       verbose=True
+#       default=False
+#       ;;
+#     s) 
+#       singleUser=True
+#       ;;
+#     *)
+#       printf "Incorrec usage please refer to the README\n"
+#       ;;
+#   esac
+# done
+
 
 # get the name of calling user using whoami before sudo
 mainUser=$(whoami)
@@ -11,6 +32,7 @@ users=("testUser" "userTest" "myUserTest")
 # variables related to testing files
 testFile="../test/ntapfuse_test.py"
 testOutput="../test/test_results.txt"
+testDirectory="../test"
 
 printf "Creating FUSE group...\n"
 sudo groupadd -f FUSE
@@ -46,7 +68,6 @@ sudo chgrp -R FUSE ./ntapfuse
 printf "Change directory to test directory..."
 cd ntapfuse
 
-
 printf "Starting ntapfuse...\n"
 ntapfuse mount base_dir mount_dir -o allow_other
 sudo chmod g+rwx log.db
@@ -56,6 +77,7 @@ sudo chgrp -R FUSE log.db
 printf "Running the test suite for %s...\n" ${mainUser}
 pytest ${testFile} | tee -a ${testOutput}
 
+##Insert test for chown
 # run the test suite for rest of the test users
 for u in ${!users[@]}; do 
    printf "Running the test suite for %s\n" ${users[$u]} | tee -a ${testOutput}
@@ -64,7 +86,6 @@ done
 
 printf "Unmounting ntapfuse...\n"
 fusermount -u mount_dir
-pkill ntapfuse
 
 printf "Now cleaning up the test environment...\n"
 for u in ${!users[@]}; do 
@@ -72,15 +93,13 @@ for u in ${!users[@]}; do
   sudo userdel -f ${users[$u]}
 done
 
-
-
 printf "Deleting the FUSE group...\n"
 sudo groupdel -f FUSE
-
 printf "Removing all lingering files from the test directories..\n"
 rm -rf ./base_dir/*
 rm -rf ./mount_dir/*
-printf "Removing the database file \n"
+printf "Copying and removing the database file...\n"
+cp ./log.db ${testDirectory}
 rm -f ./log.db
 printf "Returning to main directory...\n"
 cd ..

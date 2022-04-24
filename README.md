@@ -40,6 +40,7 @@ You need to run the following commands to install ntapfuse:
   $ autoreconf --install
   $ ./configure
   $ sudo make install
+  $ sudo chmod u+s /usr/local/bin/ntapfuse
 ```
 
 ## Configuration
@@ -50,6 +51,8 @@ changes to your /etc/fuse.conf by uncommenting the "user_allow_other" option.
 If you do not want your filesystem to work for multiple users, you can 
 ensure it runs correctly by using the single user test-suite as described in 
 the testing section.
+
+
 
 
 ## Usage
@@ -76,3 +79,16 @@ socket errors, like so:
 
 ## Testing
 
+you can run the testing script from the repository root by typing 
+
+```bash
+  $ ./test/test.sh 
+```
+
+into your shell prompt. a copy of the database file in addition to the results
+of the tests will be written to the test directory upon completion.
+
+the script will do the instalttion and modification of the ntapfuse binary for
+you, but please make sure you have at least created the auto tools files and ran
+the configuration script before running the test script, as it assumes the Makefile 
+already exists

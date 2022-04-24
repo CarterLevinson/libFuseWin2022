@@ -31,6 +31,7 @@ mainUser=$(whoami)
 users=("testUser" "userTest" "myUserTest")
 # variables related to testing files
 testFile="../test/ntapfuse_test.py"
+testChown="../test/test_chown.py"
 testOutput="../test/test_results.txt"
 testDirectory="../test"
 
@@ -78,13 +79,15 @@ sudo chgrp -R FUSE log.db
 # run the test suites for main user 
 printf "Running the test suite for %s...\n" ${mainUser}
 pytest ${testFile} | tee -a ${testOutput}
-
-##Insert test for chown
 # run the test suite for rest of the test users
 for u in ${!users[@]}; do 
    printf "Running the test suite for %s\n" ${users[$u]} | tee -a ${testOutput}
    sudo runuser -u ${users[$u]} -- pytest ${testFile} | tee -a ${testOutput}
 done
+
+# test chown using sudo 
+printf "Testing chown using sudo...\n"
+pytest ${testChown} | tee -a ${testOutput}
 
 printf "Unmounting ntapfuse...\n"
 fusermount -u mount_dir
